@@ -25,6 +25,7 @@ class CometTabBar extends StatelessWidget {
     final items = List.generate(
       state.selectedShelf.books.length,
       (index) {
+        if (index == 0) return const SizedBox();
         final book = state.selectedShelf.books[index];
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -42,23 +43,30 @@ class CometTabBar extends StatelessWidget {
       height: CometTheme.tabbarHeight,
       child: Row(
         children: [
-          const SizedBox(width: 30),
-          SizedBox(
-            width: 40,
-            height: 40,
-            child: Image.asset('assets/images/${data.siteIcon}'),
-          ),
           const SizedBox(width: 10),
-          Text(
-            data.siteTitle,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+          InkWell(
+            onTap: () => onSelectBook(state.selectedShelf.books[0]),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Image.asset('assets/images/${data.siteIcon}'),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  data.siteTitle,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
             ),
           ),
           const Expanded(child: SizedBox()),
           ...items,
-          const Spacer(),
+          const SizedBox(width: 20),
           if (data.shelves.length >= 2)
             DropdownView(
               state: state,

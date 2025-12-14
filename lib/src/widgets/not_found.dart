@@ -26,7 +26,6 @@ class CometNotFoundPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("data"),
             const Icon(
               Icons.error_outline,
               size: 100,

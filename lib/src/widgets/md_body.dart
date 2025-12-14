@@ -11,7 +11,8 @@ import 'package:comet/src/types/inline_widget.dart';
 // {{WIDGET_NAME}}
 const _inlineWidgetBegin = '{{';
 const _inlineWidgetEnd = '}}';
-const _inlineWidgetPattern = "$_inlineWidgetBegin(.*?)$_inlineWidgetEnd";
+// {{WidgetName key=value key2="value"}}
+const _inlineWidgetPattern = r'\{\{\s*([A-Za-z0-9_]+)([^}]*)\}\}';
 
 class HtmlNode extends ElementNode {
   HtmlNode(
@@ -41,10 +42,12 @@ class WidgetNode extends TextNode {
     super.style,
     required this.inlineWidgets,
     required this.widgetName,
+    required this.attributes,
   });
 
   final CometInlineWidgets inlineWidgets;
   final String widgetName;
+  final Map<String, String> attributes;
 
   @override
   InlineSpan build() {
@@ -55,7 +58,7 @@ class WidgetNode extends TextNode {
         if (builder == null) {
           return Text('Widget not found for name: $widgetName');
         }
-        return builder(context);
+        return builder(context, attributes);
       },
     );
 
@@ -84,12 +87,27 @@ MarkdownGenerator createGenerator(CometInlineWidgets inlineWidgets) {
       // Widget ?
       final widgetRegExp = RegExp(_inlineWidgetPattern);
       final widgetMatch = widgetRegExp.firstMatch(text);
-      final widgetName = widgetMatch?.group(1);
-      final hasWidget = widgetName != null;
-      if (hasWidget) {
+
+      if (widgetMatch != null) {
+        final widgetName = widgetMatch.group(1)!;
+        final rawArgs = widgetMatch.group(2) ?? '';
+
+        final attributes = <String, String>{};
+        final argRegExp = RegExp(
+            r'([A-Za-z0-9_]+)\s*=\s*"([^"]*)"|([A-Za-z0-9_]+)\s*=\s*([^"\s]+)');
+
+        for (final match in argRegExp.allMatches(rawArgs)) {
+          if (match.group(1) != null) {
+            attributes[match.group(1)!] = match.group(2)!;
+          } else if (match.group(3) != null) {
+            attributes[match.group(3)!] = match.group(4)!;
+          }
+        }
+
         return WidgetNode(
           inlineWidgets: inlineWidgets,
           widgetName: widgetName,
+          attributes: attributes,
         );
       }
 

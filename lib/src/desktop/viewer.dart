@@ -1,3 +1,5 @@
+import 'package:comet/src/desktop/with_toc.dart';
+import 'package:comet/src/widgets/md_body.dart';
 import 'package:flutter/material.dart';
 import 'package:comet/src/desktop/with_menu.dart';
 import 'package:comet/src/types/inline_widget.dart';
@@ -51,11 +53,16 @@ class DesktopViewer extends StatelessWidget {
             ),
             SizedBox(
               height: bodyHeight,
-              child: WithMenuView(
+              child: MdBodyView(
+                tocController: null,
                 state: state,
                 inlineWidgets: inlineWidgets,
-                onSelectPage: onSelectPage,
               ),
+              //  WithMenuView(
+              //   state: state,
+              //   inlineWidgets: inlineWidgets,
+              //   onSelectPage: onSelectPage,
+              // ),
             ),
             SizedBox(
               height: CometTheme.footerHeight,
